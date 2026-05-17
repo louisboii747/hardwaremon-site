@@ -1,12 +1,840 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HardwareMon</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HardwareMon — Modern System Monitoring for Linux & Windows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0c0c0c;
+    --surface:  #141414;
+    --surface2: #1c1c1c;
+    --text:     #ddd8ce;
+    --muted:    #666057;
+    --subtle:   #3a3730;
+    --amber:    #d97316;
+    --amber-hi: #fb923c;
+    --border:   #222;
+    --border-hi:#333;
+    --mono:     'DM Mono', monospace;
+    --sans:     'Epilogue', sans-serif;
+    --radius:   6px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: .025;
+    mix-blend-mode: overlay;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 56px;
+    background: rgba(12,12,12,.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: .06em;
+  }
+  .nav-logo span { color: var(--amber); }
+  .nav-links {
+    display: flex; align-items: center; gap: 2px;
+  }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    letter-spacing: .04em;
+    transition: color .15s, background .15s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface2); }
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--amber);
+    text-decoration: none;
+    padding: 7px 16px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(217,115,22,.35);
+    letter-spacing: .04em;
+    transition: background .15s, border-color .15s;
+  }
+  .nav-cta:hover { background: rgba(217,115,22,.1); border-color: var(--amber); }
+
+  /* ── LAYOUT ── */
+  .container {
+    position: relative; z-index: 1;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  section { padding: 100px 0; }
+  section + section { border-top: 1px solid var(--border); }
+
+  /* ── HERO ── */
+  #home { padding-top: 160px; padding-bottom: 120px; }
+  .hero-inner { max-width: 820px; }
+
+  .hero-icon-container {
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: up .5s .05s forwards;
+  }
+  .hero-icon {
+    width: 80px;
+    height: auto;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--amber);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: up .5s .1s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 20px; height: 1px;
+    background: var(--amber);
+  }
+
+  .hero-title {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: clamp(2.4rem, 5vw, 4.5rem);
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    color: var(--text);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: up .5s .2s forwards;
+  }
+  .hero-title em {
+    font-style: normal;
+    color: var(--amber);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 620px;
+    line-height: 1.75;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: up .5s .3s forwards;
+  }
+  .hero-sub code {
+    font-family: var(--mono);
+    font-size: .88em;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+
+  .hero-btns {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    opacity: 0;
+    animation: up .5s .4s forwards;
+  }
+  .btn {
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 500;
+    letter-spacing: .05em;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    transition: all .15s;
+    display: inline-block;
+  }
+  .btn-filled {
+    background: var(--amber);
+    color: #0c0c0c;
+    border: 1px solid var(--amber);
+  }
+  .btn-filled:hover { background: var(--amber-hi); border-color: var(--amber-hi); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border-hi);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--subtle); }
+
+  .hero-stats {
+    display: flex; gap: 0;
+    margin-top: 72px;
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+    opacity: 0;
+    animation: up .5s .55s forwards;
+  }
+  .stat {
+    flex: 1;
+    padding: 24px 28px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-val {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--text);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .stat-val em { color: var(--amber); font-style: normal; }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: .62rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── MONITOR DISPLAY ── */
+  .monitor-display {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .mon-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+  .mon-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .mon-name {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .mon-val {
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--text);
+  }
+  .mon-bar {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .mon-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--amber);
+  }
+  .mon-fill.hot { background: #ef4444; }
+  .mon-fill.med { background: #eab308; }
+
+  .mon-sub {
+    display: flex; gap: 16px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .mon-sub-item {
+    font-family: var(--mono);
+    font-size: .6rem;
+    color: var(--muted);
+  }
+  .mon-sub-item b { color: var(--text); font-weight: 400; }
+
+  /* ── ABOUT ── */
+  #about .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1; max-width: 40px; height: 1px;
+    background: var(--amber);
+    opacity: .5;
+  }
+
+  .section-heading {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+
+  .body-text {
+    color: var(--muted);
+    font-size: .97rem;
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .body-text:last-child { margin-bottom: 0; }
+  
+  .list-wrapper {
+    margin-top: 24px;
+  }
+  .list-item {
+    font-family: var(--mono);
+    font-size: .85rem;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .list-item::before {
+    content: '→';
+    color: var(--amber);
+  }
+
+  /* ── FEATURES ── */
+  #features .feat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 56px;
+  }
+  .feat {
+    background: var(--bg);
+    padding: 36px 32px;
+    transition: background .2s;
+  }
+  .feat:hover { background: var(--surface); }
+  .feat-num {
+    font-family: var(--mono);
+    font-size: .62rem;
+    color: var(--amber);
+    letter-spacing: .1em;
+    margin-bottom: 20px;
+    opacity: .7;
+  }
+  .feat-name {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+  .feat-desc {
+    font-size: .88rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── INSTALL ── */
+  #download .install-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 56px;
+  }
+  .install-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .install-card:hover { border-color: var(--subtle); }
+  .install-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .install-os {
+    font-family: var(--mono);
+    font-size: .78rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .install-tag {
+    font-family: var(--mono);
+    font-size: .6rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--amber);
+    background: rgba(217,115,22,.1);
+    border: 1px solid rgba(217,115,22,.2);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-left: auto;
+  }
+  .install-code {
+    padding: 20px 24px;
+    min-height: 140px;
+  }
+  .install-line {
+    font-family: var(--mono);
+    font-size: .78rem;
+    line-height: 2;
+    color: var(--muted);
+  }
+  .install-line .c { color: var(--muted); opacity: .6; }
+  .install-line .p { color: var(--amber); }
+  .install-line .cmd { color: var(--text); }
+  .install-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end;
+  }
+  .install-link {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .04em;
+    transition: color .15s;
+  }
+  .install-link:hover { color: var(--amber); }
+  .install-link::after { content: ' ↗'; }
+
+  /* ── GITHUB ── */
+  #github .gh-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .gh-repo {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+  }
+  .gh-repo-top {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .gh-icon { font-size: 1.4rem; }
+  .gh-name {
+    font-family: var(--mono);
+    font-size: .9rem;
+    color: var(--text);
+  }
+  .gh-name span { color: var(--muted); }
+  .gh-desc-text {
+    font-size: .9rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .gh-meta {
+    display: flex; gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .gh-badge {
+    font-family: var(--mono);
+    font-size: .62rem;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    position: relative; z-index: 1;
+  }
+  .footer-inner {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .foot-logo {
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .foot-logo span { color: var(--amber); }
+  .foot-copy {
+    font-family: var(--mono);
+    font-size: .68rem;
+    color: var(--muted);
+    letter-spacing: .04em;
+  }
+  .foot-gh {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color .15s;
+  }
+  .foot-gh:hover { color: var(--text); }
+
+  /* ── REVEAL ── */
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity .55s ease, transform .55s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .d1 { transition-delay: .07s; }
+  .d2 { transition-delay: .14s; }
+  .d3 { transition-delay: .21s; }
+  .d4 { transition-delay: .28s; }
+  .d5 { transition-delay: .35s; }
+
+  @keyframes up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    nav .nav-links { display: none; }
+    .container { padding: 0 24px; }
+    .about-grid, #github .gh-inner, .install-grid { grid-template-columns: 1fr; gap: 40px; }
+    .feat-grid { grid-template-columns: 1fr; }
+    .hero-stats { flex-direction: column; }
+    #home { padding-top: 120px; }
+  }
+
+  ::selection { background: rgba(217,115,22,.25); color: var(--text); }
+</style>
 </head>
 <body>
-    <h1>HardwareMon</h1>
-    <p>Official website is coming soon!</p>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-logo">hw<span>mon</span></a>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#features">Features</a>
+    <a href="#download">Install</a>
+    <a href="#github">GitHub</a>
+  </div>
+  <a href="https://github.com/louisboii747/HardwareMon/releases" target="_blank" rel="noopener" class="nav-cta">Download ↓</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="home">
+<div class="container">
+  <div class="hero-inner">
+    <div class="hero-icon-container">
+      <img src="https://raw.githubusercontent.com/louisboii747/HardwareMon/main/hardwaremon/cpu.png" class="hero-icon" alt="HardwareMon Logo">
+    </div>
+    <p class="hero-tag">Cross-Platform · Open Source · Flutter & Python</p>
+    <h1 class="hero-title">
+      Modern system monitoring<br>for <em>Linux & Windows</em>.
+    </h1>
+    <p class="hero-sub">
+      A fast, lightweight, and clean performance monitoring suite designed to track real-time system activity without unnecessary complexity. Hosted securely on Cloudflare Pages.
+    </p>
+    <div class="hero-btns">
+      <a href="#download" class="btn btn-filled">Install HardwareMon</a>
+      <a href="https://github.com/louisboii747/HardwareMon" target="_blank" rel="noopener" class="btn btn-ghost">github.com/louisboii747/HardwareMon</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-val">Linux <em>+</em> Win</span>
+        <span class="stat-label">Supported OS</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">Flutter <em>+</em> Tkinter</span>
+        <span class="stat-label">Editions Available</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">APT <em>/</em> DNF <em>/</em> WinGet</span>
+        <span class="stat-label">Native Package Managers</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══ ABOUT ══ -->
+<section id="about">
+<div class="container">
+  <div class="about-grid">
+    <div>
+      <p class="section-label reveal">About</p>
+      <h2 class="section-heading reveal d1">Lightweight resource visibility, tailored for your desktop.</h2>
+      <p class="body-text reveal d2">
+        I started building HardwareMon in January 2026 starting as a tiny terminal output only for Linux
+        in a VS Code Window. Since then, it has evolved into Flutter and Tkinter ports, with Winget, DNF
+        and APT repository support hosted on Cloudflare.
+      </p>
+      <p class="body-text reveal d2">
+        What began as a small side project quickly became a long-term passion project. 
+        Each release introduced new ideas, cleaner interfaces and better platform support, 
+        gradually turning a simple Linux script into a fully featured open-source monitoring application.
+      </p>
+    </div>
+    <div class="reveal d2">
+      <div class="monitor-display">
+        <!-- CPU -->
+        <div class="mon-row">
+          <div class="mon-header">
+            <span class="mon-name">CPU Utilization</span>
+            <span class="mon-val">42%</span>
+          </div>
+          <div class="mon-bar"><div class="mon-fill" style="width:42%"></div></div>
+        </div>
+        <!-- GPU -->
+        <div class="mon-row">
+          <div class="mon-header">
+            <span class="mon-name">GPU Engine & Temp</span>
+            <span class="mon-val">58°C</span>
+          </div>
+          <div class="mon-bar"><div class="mon-fill med" style="width:55%"></div></div>
+        </div>
+        <!-- NET -->
+        <div class="mon-row">
+          <div class="mon-header">
+            <span class="mon-name">Network Throughput</span>
+            <span class="mon-val">12.4 MB/s</span>
+          </div>
+          <div class="mon-bar"><div class="mon-fill" style="width:28%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section id="features">
+<div class="container">
+  <p class="section-label reveal">Features</p>
+  <h2 class="section-heading reveal d1">Real-Time Performance Architecture</h2>
+  <div class="feat-grid">
+    <div class="feat reveal">
+      <div class="feat-num">01</div>
+      <div class="feat-name">Real-Time Metrics</div>
+      <p class="feat-desc">Live calculation framework parsing vital processing vectors instantly across your hardware layers.</p>
+    </div>
+    <div class="feat reveal d1">
+      <div class="feat-num">02</div>
+      <div class="feat-name">Hardware Ecosystem</div>
+      <p class="feat-desc">Detailed reporting modules tracking active CPU load, system RAM statistics, and disk volume capacity profiles.</p>
+    </div>
+    <div class="feat reveal d2">
+      <div class="feat-num">03</div>
+      <div class="feat-name">Graphics Processing</div>
+      <p class="feat-desc">Isolates graphics micro-architecture metrics to continuously deliver direct core usage and thermal constraints data.</p>
+    </div>
+    <div class="feat reveal d3">
+      <div class="feat-num">04</div>
+      <div class="feat-name">Network Throughput</div>
+      <p class="feat-desc">Dynamic input/output analysis mapping interfaces to display real-time network upload and download activity speeds.</p>
+    </div>
+    <div class="feat reveal d4">
+      <div class="feat-num">05</div>
+      <div class="feat-name">Process Visibility</div>
+      <p class="feat-desc">Integrated system telemetry lists active running applications and operational process consumption trends.</p>
+    </div>
+    <div class="feat reveal d5">
+      <div class="feat-num">06</div>
+      <div class="feat-name">Lightweight Footprint</div>
+      <p class="feat-desc">The Linux Flutter desktop edition harnesses optimized rendering engines to guarantee minimal host CPU overhead.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══ INSTALL ══ -->
+<section id="download">
+<div class="container">
+  <p class="section-label reveal">Native Packaging</p>
+  <h2 class="section-heading reveal d1">Get Up and Running</h2>
+  <div class="install-grid">
+
+    <div class="install-card reveal d1">
+      <div class="install-header">
+        <span class="install-os">Debian / Ubuntu</span>
+        <span class="install-tag">APT Repositories</span>
+      </div>
+      <div class="install-code">
+        <div class="install-line"><span class="c"># Setup ecosystem and verify keys</span></div>
+        <div class="install-line"><span class="p">$</span> <span class="cmd">curl -fsSL https://hardwaremon.pages.dev/apt/setup.sh | bash -</span></div>
+        <div class="install-line"><span class="p">$</span> <span class="cmd">sudo apt update && sudo apt install hardwaremon</span></div>
+      </div>
+      <div class="install-footer">
+        <a href="https://github.com/louisboii747/HardwareMon/releases" target="_blank" rel="noopener" class="install-link">APT Releases</a>
+      </div>
+    </div>
+
+    <div class="install-card reveal d2">
+      <div class="install-header">
+        <span class="install-os">Fedora / Red Hat Enterprise Linux</span>
+        <span class="install-tag">DNF Configuration</span>
+      </div>
+      <div class="install-code">
+        <div class="install-line"><span class="c"># Provision the DNF tracking configurations</span></div>
+        <div class="install-line"><span class="p">$</span> <span class="cmd">sudo dnf config-manager --add-repo https://pkgs.hwmon.dev/rpm/hwmon.repo</span></div>
+        <div class="install-line"><span class="p">$</span> <span class="cmd">sudo dnf install hardwaremon</span></div>
+      </div>
+      <div class="install-footer">
+        <a href="https://github.com/louisboii747/HardwareMon/releases" target="_blank" rel="noopener" class="install-link">DNF Releases</a>
+      </div>
+    </div>
+
+    <div class="install-card reveal d3">
+      <div class="install-header">
+        <span class="install-os">Windows Ecosystem</span>
+        <span class="install-tag">WinGet Platform</span>
+      </div>
+      <div class="install-code">
+        <div class="install-line"><span class="c"># Direct package delivery via WinGet shell</span></div>
+        <div class="install-line"><span class="p">&gt;</span> <span class="cmd">winget install louisboii747.HardwareMon</span></div>
+      </div>
+      <div class="install-footer">
+        <a href="https://github.com/louisboii747/HardwareMon/releases" target="_blank" rel="noopener" class="install-link">Get Windows Binaries</a>
+      </div>
+    </div>
+
+    <div class="install-card reveal d4">
+      <div class="install-header">
+        <span class="install-os">Source Code Compilation</span>
+        <span class="install-tag">Python Executable</span>
+      </div>
+      <div class="install-code">
+        <div class="install-line"><span class="c"># Clone operational branches locally</span></div>
+        <div class="install-line"><span class="p">$</span> <span class="cmd">git clone https://github.com/louisboii747/HardwareMon</span></div>
+        <div class="install-line"><span class="p">$</span> <span class="cmd">cd HardwareMon && python -m pip install -r requirements.txt</span></div>
+      </div>
+      <div class="install-footer">
+        <a href="https://github.com/louisboii747/HardwareMon" target="_blank" rel="noopener" class="install-link">View Source</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ══ GITHUB ══ -->
+<section id="github">
+<div class="container">
+  <div class="gh-inner">
+    <div>
+      <p class="section-label reveal">Development</p>
+      <h2 class="section-heading reveal d1">Open Source Workspace. Contributions welcomed.</h2>
+      <p class="body-text reveal d2">
+        HardwareMon's build sequences operate fully inside GitHub Actions CI/CD environments and serve from Cloudflare global infrastructure for secure deployment profiles.
+      </p>
+      <div class="hero-btns reveal d3" style="margin-top: 32px;">
+        <a href="https://github.com/louisboii747/HardwareMon" target="_blank" rel="noopener" class="btn btn-filled">View on GitHub</a>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <div class="gh-repo">
+        <div class="gh-repo-top">
+          <span class="gh-icon">⬡</span>
+          <div>
+            <div class="gh-name"><span>louisboii747 /</span> HardwareMon</div>
+          </div>
+        </div>
+        <p class="gh-desc-text">
+          Modern performance monitor tracking metrics cleanly. Contains stable Python/Tkinter frameworks alongside a highly responsive desktop Flutter edition.
+        </p>
+        <a href="https://github.com/louisboii747/HardwareMon" target="_blank" rel="noopener" class="btn btn-ghost" style="font-size:.72rem;padding:9px 18px;">github.com/louisboii747/HardwareMon ↗</a>
+        <div class="gh-meta">
+          <div class="gh-badge">Python 3.x</div>
+          <div class="gh-badge">Flutter Desktop</div>
+          <div class="gh-badge">CI/CD Active</div>
+          <div class="gh-badge">MIT License</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+<div class="container">
+  <div class="footer-inner">
+    <a href="#home" class="foot-logo">hw<span>mon</span></a>
+    <span class="foot-copy">© 2026 louisboii747 · MIT License</span>
+    <a href="https://github.com/louisboii747/HardwareMon" target="_blank" rel="noopener" class="foot-gh">GitHub ↗</a>
+  </div>
+</div>
+</footer>
+
+<script>
+// Scroll reveal
+const els = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: .1 });
+els.forEach(el => io.observe(el));
+
+// Active nav tracking
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.nav-links a');
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.style.color = '');
+      const a = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+      if (a) a.style.color = 'var(--text)';
+    }
+  });
+}, { threshold: .4 });
+sections.forEach(s => navObs.observe(s));
+</script>
 </body>
 </html>
