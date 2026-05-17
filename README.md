@@ -1,4 +1,5 @@
 # HardwareMon Website
+https://gethardwaremon.pages.dev/
 
 The official website for **HardwareMon** a modern cross-platform system monitoring application built with Flutter and Python.
 
