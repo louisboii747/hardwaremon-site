@@ -4,6 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HardwareMon — Modern System Monitoring for Linux & Windows</title>
+
+<meta name="robots" content="index, follow">
+
+<meta name="description" content="HardwareMon is a modern open-source system monitoring application for Linux and Windows featuring real-time CPU, GPU, RAM, disk, process and network monitoring.">
+
+<meta name="keywords" content="linux system monitor, hardware monitor, windows task manager alternative, flutter desktop monitoring, gpu monitor linux, cpu monitor app, open source system monitor">
+
+<meta name="author" content="Louis Hinchliffe">
+
+<meta property="og:title" content="HardwareMon - Modern System Monitoring">
+<meta property="og:description" content="Cross-platform real-time hardware monitoring for Linux and Windows.">
+<meta property="og:type" content="website">
+
+<meta name="theme-color" content="#d97316">
+
+<link rel="canonical" href="https://hardwaremon.pages.dev/">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Epilogue:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
@@ -53,8 +70,8 @@
     height: 56px;
     background: rgba(12,12,12,.92);
     border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
   .nav-logo {
     font-family: var(--mono);
@@ -554,6 +571,21 @@
 
   ::selection { background: rgba(217,115,22,.25); color: var(--text); }
 </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "HardwareMon",
+  "applicationCategory": "SystemMonitoringApplication",
+  "operatingSystem": "Linux, Windows",
+  "description": "Modern open-source system monitoring software for Linux and Windows.",
+  "author": {
+    "@type": "Person",
+    "name": "Louis Hinchliffe"
+  }
+}
+</script>
 </head>
 <body>
 
@@ -563,6 +595,7 @@
   <div class="nav-links">
     <a href="#about">About</a>
     <a href="#features">Features</a>
+    <a href="screenshots.html">Screenshots</a>
     <a href="#download">Install</a>
     <a href="#github">GitHub</a>
   </div>
@@ -574,7 +607,7 @@
 <div class="container">
   <div class="hero-inner">
     <div class="hero-icon-container">
-      <img src="https://raw.githubusercontent.com/louisboii747/HardwareMon/main/hardwaremon/cpu.png" class="hero-icon" alt="HardwareMon Logo">
+      <img src="https://raw.githubusercontent.com/louisboii747/HardwareMon/main/hardwaremon/cpu.png" class="hero-icon" alt="HardwareMon Linux and Windows system monitoring application logo">
     </div>
     <p class="hero-tag">Cross-Platform · Open Source · Flutter & Python</p>
     <h1 class="hero-title">
@@ -611,7 +644,7 @@
   <div class="about-grid">
     <div>
       <p class="section-label reveal">About</p>
-      <h2 class="section-heading reveal d1">Lightweight resource visibility, tailored for your desktop.</h2>
+      <h2 class="section-heading reveal d1">Modern Open-Source Hardware Monitoring for Linux and Windows</h2>
       <p class="body-text reveal d2">
         I started building HardwareMon in January 2026 starting as a tiny terminal output only for Linux
         in a VS Code Window. Since then, it has evolved into Flutter and Tkinter ports, with Winget, DNF
@@ -659,38 +692,54 @@
 <section id="features">
 <div class="container">
   <p class="section-label reveal">Features</p>
-  <h2 class="section-heading reveal d1">Real-Time Performance Architecture</h2>
+  <h2 class="section-heading reveal d1">Real-Time System Monitoring Features</h2>
   <div class="feat-grid">
-    <div class="feat reveal">
-      <div class="feat-num">01</div>
-      <div class="feat-name">Real-Time Metrics</div>
-      <p class="feat-desc">Live calculation framework parsing vital processing vectors instantly across your hardware layers.</p>
-    </div>
-    <div class="feat reveal d1">
-      <div class="feat-num">02</div>
-      <div class="feat-name">Hardware Ecosystem</div>
-      <p class="feat-desc">Detailed reporting modules tracking active CPU load, system RAM statistics, and disk volume capacity profiles.</p>
-    </div>
-    <div class="feat reveal d2">
-      <div class="feat-num">03</div>
-      <div class="feat-name">Graphics Processing</div>
-      <p class="feat-desc">Isolates graphics micro-architecture metrics to continuously deliver direct core usage and thermal constraints data.</p>
-    </div>
-    <div class="feat reveal d3">
-      <div class="feat-num">04</div>
-      <div class="feat-name">Network Throughput</div>
-      <p class="feat-desc">Dynamic input/output analysis mapping interfaces to display real-time network upload and download activity speeds.</p>
-    </div>
-    <div class="feat reveal d4">
-      <div class="feat-num">05</div>
-      <div class="feat-name">Process Visibility</div>
-      <p class="feat-desc">Integrated system telemetry lists active running applications and operational process consumption trends.</p>
-    </div>
-    <div class="feat reveal d5">
-      <div class="feat-num">06</div>
-      <div class="feat-name">Lightweight Footprint</div>
-      <p class="feat-desc">The Linux Flutter desktop edition harnesses optimized rendering engines to guarantee minimal host CPU overhead.</p>
-    </div>
+  <div class="feat reveal">
+    <div class="feat-num">01</div>
+    <div class="feat-name">Real-Time Metrics</div>
+    <p class="feat-desc">
+      Monitor real-time CPU, RAM, GPU, disk and network usage with live updating system statistics.
+    </p>
+  </div>
+
+  <div class="feat reveal d1">
+    <div class="feat-num">02</div>
+    <div class="feat-name">Hardware Monitoring</div>
+    <p class="feat-desc">
+      Track processor load, memory usage, disk activity and hardware performance across Linux and Windows systems.
+    </p>
+  </div>
+
+  <div class="feat reveal d2">
+    <div class="feat-num">03</div>
+    <div class="feat-name">GPU Statistics</div>
+    <p class="feat-desc">
+      View GPU utilization, graphics performance and temperature monitoring in real time.
+    </p>
+  </div>
+
+  <div class="feat reveal d3">
+    <div class="feat-num">04</div>
+    <div class="feat-name">Network Monitoring</div>
+    <p class="feat-desc">
+      Monitor real-time network upload and download speeds with live throughput analysis.
+    </p>
+  </div>
+
+  <div class="feat reveal d4">
+    <div class="feat-num">05</div>
+    <div class="feat-name">Process Management</div>
+    <p class="feat-desc">
+      Inspect running processes, background applications and system resource usage in real time.
+    </p>
+  </div>
+
+  <div class="feat reveal d5">
+    <div class="feat-num">06</div>
+    <div class="feat-name">Lightweight Performance</div>
+    <p class="feat-desc">
+      Built with Flutter and Python for a lightweight, responsive and modern desktop monitoring experience.
+    </p>
   </div>
 </div>
 </section>
@@ -771,7 +820,7 @@
   <div class="gh-inner">
     <div>
       <p class="section-label reveal">Development</p>
-      <h2 class="section-heading reveal d1">Open Source Workspace. Contributions welcomed.</h2>
+      <h2 class="section-heading reveal d1">Open-Source Linux and Windows System Monitoring Software.</h2>
       <p class="body-text reveal d2">
         HardwareMon's build sequences operate fully inside GitHub Actions CI/CD environments and serve from Cloudflare global infrastructure for secure deployment profiles.
       </p>
