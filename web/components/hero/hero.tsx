@@ -7,6 +7,7 @@ import TelemetryPreview from "./telemetry-preview";
 
 export default function Hero() {
   return (
+    <>
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <BackgroundEffects />
 
@@ -47,11 +48,17 @@ export default function Hero() {
             duration: 1,
           }}
           className="
-            max-w-4xl text-5xl font-sans font-semibold
-            tracking-tight text-transparent bg-clip-text
-            bg-gradient-to-b from-white to-white/70
-            md:text-7xl
-          "
+          max-w-5xl
+          text-5xl
+          font-[650]
+          tracking-[-0.06em]
+          text-transparent
+          bg-clip-text
+          bg-gradient-to-b
+          from-white
+          to-white/70
+          md:text-7xl
+        "
         >
           Hardware monitoring
           <br />
@@ -123,5 +130,6 @@ export default function Hero() {
         </motion.div>
       </motion.div>
     </section>
+    </>
   );
 }
