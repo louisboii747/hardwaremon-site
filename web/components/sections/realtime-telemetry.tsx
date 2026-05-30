@@ -64,6 +64,74 @@ useEffect(() => {
   <TelemetryGraph />
 </div>
 
+      {/* Floating Telemetry Cards */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          animate={{
+            y: [-12, 12, -12],
+            rotate: [-1, 1, -1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute left-[15%] top-[30%]"
+        >
+          <div className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 backdrop-blur-xl">
+            <p className="text-xs uppercase tracking-wider text-white/40">
+              Memory
+            </p>
+            <p className="mt-2 text-3xl font-bold text-white">
+              18.4 GB
+            </p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          animate={{
+            y: [10, -10, 10],
+            rotate: [1, -1, 1],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute right-[15%] top-[35%]"
+        >
+          <div className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 backdrop-blur-xl">
+            <p className="text-xs uppercase tracking-wider text-white/40">
+              GPU Temp
+            </p>
+            <p className="mt-2 text-3xl font-bold text-white">
+              71°C
+            </p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          animate={{
+            y: [-8, 8, -8],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute left-[25%] bottom-[22%]"
+        >
+          <div className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 backdrop-blur-xl">
+            <p className="text-xs uppercase tracking-wider text-white/40">
+              Processes
+            </p>
+            <p className="mt-2 text-3xl font-bold text-white">
+              214
+            </p>
+          </div>
+        </motion.div>
+      </div>
+
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <motion.div

@@ -17,7 +17,11 @@ function generatePoint(index: number) {
   }
 }
 
-export default function TelemetryGraph() {
+export default function TelemetryGraph({
+  className = "",
+}: {
+  className?: string
+}) {
   const [data, setData] = useState<{ value: number }[]>(
     Array.from({ length: 40 }, (_, i) => generatePoint(i))
   )
@@ -42,7 +46,7 @@ export default function TelemetryGraph() {
   }, [])
 
   return (
-    <div className="absolute inset-0 z-0 opacity-[0.12] pointer-events-none">
+    <div className={`absolute inset-0 z-0 pointer-events-none ${className}`}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <Line
