@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import BackgroundEffects from "./background-effects";
 import FloatingNavbar from "./floating-navbar";
 import TelemetryPreview from "./telemetry-preview";
+import MagneticButton from "@/components/ui/magnetic-button";
 
 export default function Hero() {
   return (
@@ -92,27 +93,39 @@ export default function Hero() {
           }}
           className="mt-10 flex items-center gap-4"
         >
-          <button
-            className="
-              rounded-2xl bg-white px-6 py-3
-              text-sm font-medium text-black
-              transition hover:scale-[1.02]
-            "
-          >
-            Download HardwareMon
-          </button>
+          <MagneticButton>
+            <a
+              href="https://github.com/louisboii747/HardwareMon/releases/latest"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="
+                inline-block
+                rounded-2xl bg-white px-6 py-3
+                text-sm font-medium text-black
+                transition hover:scale-[1.02]
+              "
+            >
+              Download HardwareMon
+            </a>
+          </MagneticButton>
 
-          <button
-            className="
-              rounded-2xl border border-white/10
-              bg-white/5 px-6 py-3
-              text-sm text-white
-              backdrop-blur-md transition
-              hover:bg-white/10
-            "
-          >
-            View GitHub
-          </button>
+          <MagneticButton>
+            <a
+              href="https://github.com/louisboii747/HardwareMon"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="
+                inline-block
+                rounded-2xl border border-white/10
+                bg-white/5 px-6 py-3
+                text-sm text-white
+                backdrop-blur-md transition
+                hover:bg-white/10
+              "
+            >
+              View GitHub
+            </a>
+          </MagneticButton>
         </motion.div>
 
         {/* Telemetry Preview */}
