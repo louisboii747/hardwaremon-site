@@ -1,62 +1,87 @@
-"use client"
+"use client";
 
-import { motion, useMotionValue, useSpring } from "framer-motion"
-import { useEffect, useState } from "react"
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export default function CustomCursor() {
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-  const [hovering, setHovering] = useState(false)
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const [hovering, setHovering] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [hasMouse, setHasMouse] = useState(false);
 
   const cursorX = useSpring(mouseX, {
     damping: 50,
     stiffness: 1200,
-  })
+  });
 
   const cursorY = useSpring(mouseY, {
     damping: 50,
     stiffness: 1200,
-  })
+  });
 
   const ringX = useSpring(mouseX, {
     damping: 25,
     stiffness: 300,
-  })
+  });
 
   const ringY = useSpring(mouseY, {
     damping: 25,
     stiffness: 300,
-  })
+  });
 
   useEffect(() => {
-  const move = (e: MouseEvent) => {
-    mouseX.set(e.clientX)
-    mouseY.set(e.clientY)
-  }
+    setMounted(true);
 
-  window.addEventListener("mousemove", move)
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
 
-  const interactiveElements = document.querySelectorAll(
-    "button, a"
-  )
+    setHasMouse(mediaQuery.matches);
 
-  const enter = () => setHovering(true)
-  const leave = () => setHovering(false)
+    const updateDeviceType = () => {
+      setHasMouse(mediaQuery.matches);
+    };
 
-  interactiveElements.forEach((el) => {
-    el.addEventListener("mouseenter", enter)
-    el.addEventListener("mouseleave", leave)
-  })
+    mediaQuery.addEventListener("change", updateDeviceType);
 
-  return () => {
-    window.removeEventListener("mousemove", move)
+    return () => {
+      mediaQuery.removeEventListener("change", updateDeviceType);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !hasMouse) return;
+
+    const move = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+
+    window.addEventListener("mousemove", move);
+
+    const interactiveElements = document.querySelectorAll("button, a");
+
+    const enter = () => setHovering(true);
+    const leave = () => setHovering(false);
 
     interactiveElements.forEach((el) => {
-      el.removeEventListener("mouseenter", enter)
-      el.removeEventListener("mouseleave", leave)
-    })
+      el.addEventListener("mouseenter", enter);
+      el.addEventListener("mouseleave", leave);
+    });
+
+    return () => {
+      window.removeEventListener("mousemove", move);
+
+      interactiveElements.forEach((el) => {
+        el.removeEventListener("mouseenter", enter);
+        el.removeEventListener("mouseleave", leave);
+      });
+    };
+  }, [mouseX, mouseY, hasMouse, mounted]);
+
+  if (!mounted || !hasMouse) {
+    return null;
   }
-}, [mouseX, mouseY])
 
   return (
     <>
@@ -71,26 +96,24 @@ export default function CustomCursor() {
       />
 
       <motion.div
-  animate={{
-    scale: hovering ? 1.75 : 1,
-  }}
-  transition={{
-    type: "spring",
-    damping: 25,
-    stiffness: 300,
-  }}
-  className={`pointer-events-none fixed top-0 left-0 z-[9998] h-10 w-10 rounded-full border ${
-    hovering
-      ? "border-white/50"
-      : "border-white/20"
-  }`}
-  style={{
-    x: ringX,
-    y: ringY,
-    translateX: "-50%",
-    translateY: "-50%",
-  }}
-/>
+        animate={{
+          scale: hovering ? 1.75 : 1,
+        }}
+        transition={{
+          type: "spring",
+          damping: 25,
+          stiffness: 300,
+        }}
+        className={`pointer-events-none fixed top-0 left-0 z-[9998] h-10 w-10 rounded-full border ${
+          hovering ? "border-white/50" : "border-white/20"
+        }`}
+        style={{
+          x: ringX,
+          y: ringY,
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+      />
     </>
-  )
+  );
 }
