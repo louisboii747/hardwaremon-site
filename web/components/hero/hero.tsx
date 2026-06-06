@@ -3,12 +3,56 @@
 import { motion } from "framer-motion";
 import BackgroundEffects from "./background-effects";
 import FloatingNavbar from "./floating-navbar";
-import TelemetryPreview from "./telemetry-preview";
 import MagneticButton from "@/components/ui/magnetic-button";
+import { useEffect, useState } from "react";
+
+type ReleaseAsset = {
+  name: string;
+  url: string;
+};
+
+type ReleaseResponse = {
+  assets: ReleaseAsset[];
+};
 
 export default function Hero() {
+  const [downloadUrl, setDownloadUrl] = useState(
+    "https://github.com/louisboii747/HardwareMon/releases/latest"
+  );
+
+  const [buttonText, setButtonText] = useState("Download HardwareMon");
+
+  useEffect(() => {
+    const loadRelease = async () => {
+      try {
+        const response = await fetch("/api/latest-release");
+        const release: ReleaseResponse = await response.json();
+
+        const isWindows = navigator.userAgent.includes("Windows");
+
+        if (isWindows) {
+          const exeAsset = release.assets.find((asset) => asset.name.endsWith(".exe"));
+
+          if (exeAsset) {
+            setDownloadUrl(exeAsset.url);
+            setButtonText("Download for Windows");
+          }
+        } else {
+          setDownloadUrl("https://github.com/louisboii747/HardwareMon/releases/latest");
+
+          if (navigator.userAgent.includes("Linux")) {
+            setButtonText("View Linux Downloads");
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load release:", error);
+      }
+    };
+
+    loadRelease();
+  }, []);
+
   return (
-    <>
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       <BackgroundEffects />
 
@@ -49,17 +93,17 @@ export default function Hero() {
             duration: 1,
           }}
           className="
-          max-w-5xl
-          text-5xl
-          font-[650]
-          tracking-[-0.06em]
-          text-transparent
-          bg-clip-text
-          bg-gradient-to-b
-          from-white
-          to-white/70
-          md:text-7xl
-        "
+            max-w-5xl
+            text-5xl
+            font-[650]
+            tracking-[-0.06em]
+            text-transparent
+            bg-clip-text
+            bg-gradient-to-b
+            from-white
+            to-white/70
+            md:text-7xl
+          "
         >
           Hardware monitoring
           <br />
@@ -83,6 +127,15 @@ export default function Hero() {
           monitoring for Linux and Windows.
         </motion.p>
 
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-6 text-xs text-white/40"
+        >
+          Optimised for your platform
+        </motion.div>
+
         {/* Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -95,17 +148,23 @@ export default function Hero() {
         >
           <MagneticButton>
             <a
-              href="https://github.com/louisboii747/HardwareMon/releases/latest"
+              href={downloadUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="
                 inline-block
-                rounded-2xl bg-white px-6 py-3
-                text-sm font-medium text-black
-                transition hover:scale-[1.02]
+                rounded-2xl
+                bg-white
+                px-6
+                py-3
+                text-sm
+                font-medium
+                text-black
+                transition
+                hover:scale-[1.02]
               "
             >
-              Download HardwareMon
+              {buttonText}
             </a>
           </MagneticButton>
 
@@ -116,10 +175,15 @@ export default function Hero() {
               rel="noopener noreferrer"
               className="
                 inline-block
-                rounded-2xl border border-white/10
-                bg-white/5 px-6 py-3
-                text-sm text-white
-                backdrop-blur-md transition
+                rounded-2xl
+                border border-white/10
+                bg-white/5
+                px-6
+                py-3
+                text-sm
+                text-white
+                backdrop-blur-md
+                transition
                 hover:bg-white/10
               "
             >
@@ -127,22 +191,7 @@ export default function Hero() {
             </a>
           </MagneticButton>
         </motion.div>
-
-        {/* Telemetry Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{
-            delay: 0.85,
-            duration: 1.2,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="mt-16 w-full"
-        >
-          <TelemetryPreview />
-        </motion.div>
       </motion.div>
     </section>
-    </>
   );
 }

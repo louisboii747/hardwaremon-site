@@ -15,7 +15,7 @@ export default function TelemetryPreview() {
         stiffness: 120,
         damping: 20,
       }}
-      className="relative mt-16 w-full max-w-6xl perspective-[2000px]"
+      className="relative w-full max-w-6xl perspective-[2000px]"
     >
       {/* Ambient glow */}
       <div className="absolute inset-0 rounded-[32px] bg-cyan-500/10 blur-3xl" />
