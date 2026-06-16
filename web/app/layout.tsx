@@ -15,7 +15,43 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HardwareMon",
-  description: "Cinematic cross-platform system monitoring",
+  description: "Modern cross-platform hardware monitoring and analytics for Windows and Linux.",
+
+  keywords: [
+    "hardware monitor",
+    "system monitor",
+    "cpu monitor",
+    "gpu monitor",
+    "temperature monitor",
+    "windows",
+    "linux",
+    "telemetry",
+    "performance monitoring",
+  ],
+
+  openGraph: {
+    title: "HardwareMon",
+    description: "Modern cross-platform hardware monitoring and analytics for Windows and Linux.",
+    siteName: "HardwareMon",
+    type: "website",
+    url: "https://hardwaremon-site.pages.dev",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+const softwareSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "HardwareMon",
+  applicationCategory: "UtilitiesApplication",
+  operatingSystem: "Windows, Linux",
+  description: "Modern cross-platform hardware monitoring and analytics for Windows and Linux.",
+  url: "https://hardwaremon-site.pages.dev",
+  downloadUrl: "https://github.com/louisboii747/HardwareMon/releases",
 };
 
 export default function RootLayout({
@@ -24,11 +60,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(softwareSchema),
+          }}
+        />
+
         <CustomCursor />
         {children}
       </body>
