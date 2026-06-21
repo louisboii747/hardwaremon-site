@@ -2,19 +2,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies, then run the bounded local development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+The development command intentionally uses Webpack, a 1.5 GB Node heap ceiling,
+two compiler workers, and localhost-only binding. This avoids the severe
+Turbopack memory spike previously seen on Windows.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

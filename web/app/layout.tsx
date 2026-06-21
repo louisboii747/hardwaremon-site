@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
-import { Inter, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./experiences.css";
 import CustomCursor from "@/components/ui/custom-cursor";
 
-const inter = Inter({
-  variable: "--font-inter",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
@@ -14,44 +15,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HardwareMon",
-  description: "Modern cross-platform hardware monitoring and analytics for Windows and Linux.",
-
-  keywords: [
-    "hardware monitor",
-    "system monitor",
-    "cpu monitor",
-    "gpu monitor",
-    "temperature monitor",
-    "windows",
-    "linux",
-    "telemetry",
-    "performance monitoring",
-  ],
-
-  openGraph: {
-    title: "HardwareMon",
-    description: "Modern cross-platform hardware monitoring and analytics for Windows and Linux.",
-    siteName: "HardwareMon",
-    type: "website",
-    url: "https://hardwaremon-site.pages.dev",
+  metadataBase: new URL("https://hardwaremon-site.pages.dev"),
+  title: {
+    default: "HardwareMon",
+    template: "%s | HardwareMon",
   },
-
+  description:
+    "Open-source system monitoring and historical performance analytics for Windows and Linux.",
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
-const softwareSchema = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "HardwareMon",
-  applicationCategory: "UtilitiesApplication",
-  operatingSystem: "Windows, Linux",
-  description: "Modern cross-platform hardware monitoring and analytics for Windows and Linux.",
-  url: "https://hardwaremon-site.pages.dev",
-  downloadUrl: "https://github.com/louisboii747/HardwareMon/releases",
+export const viewport: Viewport = {
+  colorScheme: "dark",
+  themeColor: "#050607",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -60,15 +48,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(softwareSchema),
-          }}
-        />
-
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+      <body>
+        <a className="skip-link" href="#platform">
+          Skip to product overview
+        </a>
         <CustomCursor />
         {children}
       </body>
