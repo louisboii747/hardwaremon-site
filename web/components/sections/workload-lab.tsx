@@ -69,9 +69,11 @@ export default function WorkloadLab() {
         const row = Math.floor(index / 12);
         const column = index % 12;
         const wave = Math.sin(column * 0.8 + row * 0.55 + workload.cpu * 0.02) * 18;
-        return Math.max(4, Math.min(100, workload.cpu * 0.55 + workload.gpu * 0.3 + wave + ((index * 13) % 18)));
+        const value = workload.cpu * 0.55 + workload.gpu * 0.3 + wave + ((index * 13) % 18);
+
+        return Math.round(Math.max(4, Math.min(100, value)));
       }),
-    [workload],
+    [workload]
   );
 
   const radarPoints = [
@@ -81,7 +83,7 @@ export default function WorkloadLab() {
     [50 - workload.network * 0.25, 50 + workload.network * 0.32],
     [50 - workload.temperature * 0.38, 50 - workload.temperature * 0.12],
   ]
-    .map(([x, y]) => `${x},${y}`)
+    .map(([x, y]) => `${Number(x.toFixed(2))},${Number(y.toFixed(2))}`)
     .join(" ");
 
   return (
@@ -100,8 +102,8 @@ export default function WorkloadLab() {
           </h2>
         </div>
         <p>
-          Pick a workload and watch the whole system fingerprint change. This is the useful bit:
-          not simply seeing that a number is high, but understanding whether it makes sense.
+          Pick a workload and watch the whole system fingerprint change. This is the useful bit: not
+          simply seeing that a number is high, but understanding whether it makes sense.
         </p>
       </div>
 
@@ -131,7 +133,10 @@ export default function WorkloadLab() {
         })}
       </div>
 
-      <div className="workload-stage" style={{ "--workload-colour": workload.colour } as React.CSSProperties}>
+      <div
+        className="workload-stage"
+        style={{ "--workload-colour": workload.colour } as React.CSSProperties}
+      >
         <div className="heatmap-panel">
           <div className="workload-panel-title">
             <span>System heatmap</span>
@@ -141,12 +146,12 @@ export default function WorkloadLab() {
             {heat.map((value, index) => (
               <motion.i
                 key={`${workload.id}-${index}`}
-                initial={{ opacity: 0 }}
+                initial={{ opacity: "0" }}
                 animate={{
-                  opacity: 0.12 + value / 125,
+                  opacity: Number((0.12 + value / 125).toFixed(3)),
                   scale: value > 78 ? 1 : 0.92,
                 }}
-                transition={{ delay: index * 0.002 }}
+                transition={{ delay: Number((index * 0.002).toFixed(3)) }}
                 style={{ "--cell-heat": `${value}%` } as React.CSSProperties}
               />
             ))}
@@ -164,11 +169,23 @@ export default function WorkloadLab() {
             <small>{workload.short}</small>
           </div>
           <div className="radar-wrap">
-            <svg viewBox="0 0 100 100" role="img" aria-label={`${workload.short} system fingerprint`}>
+            <svg
+              viewBox="0 0 100 100"
+              role="img"
+              aria-label={`${workload.short} system fingerprint`}
+            >
               {[18, 30, 42].map((inset) => (
                 <polygon
                   key={inset}
-                  points={`50,${inset} ${100 - inset * 0.65},${42 - inset * 0.1} ${82 - inset * 0.4},${88 - inset * 0.25} ${18 + inset * 0.4},${88 - inset * 0.25} ${inset * 0.65},${42 - inset * 0.1}`}
+                  points={[
+                    [50, inset],
+                    [100 - inset * 0.65, 42 - inset * 0.1],
+                    [82 - inset * 0.4, 88 - inset * 0.25],
+                    [18 + inset * 0.4, 88 - inset * 0.25],
+                    [inset * 0.65, 42 - inset * 0.1],
+                  ]
+                    .map(([x, y]) => `${Number(x.toFixed(2))},${Number(y.toFixed(2))}`)
+                    .join(" ")}
                 />
               ))}
               <motion.polygon
@@ -190,7 +207,12 @@ export default function WorkloadLab() {
 
         <div className="workload-readout">
           <AnimatePresence mode="wait">
-            <motion.div key={workload.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+            <motion.div
+              key={workload.id}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
               <span>
                 <Sparkles size={15} /> What this tells you
               </span>

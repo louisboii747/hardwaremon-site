@@ -11,18 +11,23 @@ const streams = [
   { label: "NET", value: "842 Mb/s", colour: "green" },
 ];
 
-function SignalPath({ offset = 0 }: { offset?: number }) {
+function createSignalPath(offset = 0) {
   return Array.from({ length: 34 }, (_, index) => {
-    const x = (index / 33) * 900;
+    const x = Number(((index / 33) * 900).toFixed(2));
     const wave =
       Math.sin(index * 0.68 + offset) * 38 +
       Math.cos(index * 0.22 + offset) * 22 +
       (index % 7 === 0 ? 28 : 0);
-    return `${x},${165 - wave}`;
+
+    const y = Number((165 - wave).toFixed(2));
+
+    return `${x},${y}`;
   }).join(" ");
 }
 
 export default function CinematicHero() {
+  const primarySignalPath = createSignalPath(0);
+  const secondarySignalPath = createSignalPath(2.4);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothX = useSpring(mouseX, { stiffness: 70, damping: 24 });
@@ -38,7 +43,7 @@ export default function CinematicHero() {
           minute: "2-digit",
           second: "2-digit",
           hour12: false,
-        }).format(new Date()),
+        }).format(new Date())
       );
     update();
     const interval = window.setInterval(update, 1000);
@@ -100,17 +105,12 @@ export default function CinematicHero() {
           <span>computer is doing?</span>
         </motion.h1>
 
-        <motion.p
-          initial={false}
-        >
+        <motion.p initial={false}>
           HardwareMon puts the useful answers in one place: what is busy, what is hot, what is
           slowing down, and what happened while you were not looking.
         </motion.p>
 
-        <motion.div
-          className="hero-actions"
-          initial={false}
-        >
+        <motion.div className="hero-actions" initial={false}>
           <a className="button button-primary" href="#download">
             Get HardwareMon
             <ArrowDown size={16} />
@@ -121,10 +121,7 @@ export default function CinematicHero() {
           </a>
         </motion.div>
 
-        <motion.div
-          className="hero-proof"
-          initial={false}
-        >
+        <motion.div className="hero-proof" initial={false}>
           <span>
             <ShieldCheck size={14} />
             Free forever
@@ -224,13 +221,15 @@ export default function CinematicHero() {
                       <line key={y} x1="0" x2="900" y1={y} y2={y} />
                     ))}
                   </g>
-                  <polygon points={`0,260 ${SignalPath({ offset: 0 })} 900,260`} fill="url(#heroArea)" />
+                  <polygon points={`0,260 ${primarySignalPath} 900,260`} fill="url(#heroArea)" />
+
                   <polyline
                     className="signal-line"
-                    points={SignalPath({ offset: 0 })}
+                    points={primarySignalPath}
                     filter="url(#heroGlow)"
                   />
-                  <polyline className="signal-line signal-secondary" points={SignalPath({ offset: 2.4 })} />
+
+                  <polyline className="signal-line signal-secondary" points={secondarySignalPath} />
                 </svg>
               </div>
 

@@ -1,49 +1,38 @@
-"use client"
+"use client";
 
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-} from "recharts"
-
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import { Line, LineChart, ResponsiveContainer } from "recharts";
 
 function generatePoint(index: number) {
   return {
-    value:
-      50 +
-      Math.sin(index / 4) * 20 +
-      Math.random() * 10,
-  }
+    value: 50 + Math.sin(index / 4) * 20 + Math.random() * 10,
+  };
 }
 
-export default function TelemetryGraph({
-  className = "",
-}: {
-  className?: string
-}) {
-  const [data, setData] = useState<{ value: number }[]>(
+export default function TelemetryGraph({ className = "" }: { className?: string }) {
+  const [data, setData] = useState<{ value: number }[]>(() =>
     Array.from({ length: 40 }, (_, i) => generatePoint(i))
-  )
+  );
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setData((prev) => {
-        const next = [...prev.slice(1)]
+        const next = prev.slice(1);
 
         next.push({
-          value:
-            50 +
-            Math.sin(Date.now() / 1000) * 20 +
-            Math.random() * 10,
-        })
+          value: 50 + Math.sin(Date.now() / 1000) * 20 + Math.random() * 10,
+        });
 
-        return next
-      })
-    }, 500)
+        return next;
+      });
+    }, 500);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => window.clearInterval(interval);
+  }, []);
+
+  if (data.length === 0) {
+    return null;
+  }
 
   return (
     <div className={`absolute inset-0 z-0 pointer-events-none ${className}`}>
@@ -60,5 +49,5 @@ export default function TelemetryGraph({
         </LineChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

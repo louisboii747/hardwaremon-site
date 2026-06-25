@@ -36,7 +36,7 @@ const packageDetails: Record<
     descriptor: string;
     icon: typeof MonitorCog;
     steps: string[];
-    command: string;
+    commands: string[];
     assetExtensions: string[];
   }
 > = {
@@ -44,24 +44,36 @@ const packageDetails: Record<
     name: "Windows",
     descriptor: "64-bit installer",
     icon: MonitorCog,
-    steps: ["Download signed installer", "Run the guided setup", "Launch HardwareMon"],
-    command: "HardwareMon-Setup.exe",
+    steps: ["Download installer", "Run the guided setup", "Launch HardwareMon"],
+    commands: ["HardwareMon-Setup.exe"],
     assetExtensions: [".exe"],
   },
   apt: {
     name: "APT",
     descriptor: "Debian · Ubuntu",
     icon: Terminal,
-    steps: ["Connect the HardwareMon repository", "Refresh package metadata", "Install HardwareMon"],
-    command: "sudo apt update && sudo apt install hardwaremon",
+    steps: [
+      "Add the HardwareMon signing key",
+      "Connect the APT repository",
+      "Update and install HardwareMon",
+    ],
+    commands: [
+      "curl -fsSL https://pub-f6d988b71b7f48198af4ccbfb6026ba9.r2.dev/hardwaremon-public.asc | gpg --dearmor | sudo tee /usr/share/keyrings/hardwaremon.gpg > /dev/null",
+      'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hardwaremon.gpg] https://pub-f6d988b71b7f48198af4ccbfb6026ba9.r2.dev/apt stable main" | sudo tee /etc/apt/sources.list.d/hardwaremon.list',
+      "sudo apt update && sudo apt install hardwaremon",
+    ],
     assetExtensions: [".deb"],
   },
   dnf: {
     name: "DNF",
     descriptor: "Fedora · RHEL",
     icon: Package,
-    steps: ["Connect the HardwareMon repository", "Refresh package metadata", "Install HardwareMon"],
-    command: "sudo dnf install hardwaremon",
+    steps: ["Connect the DNF repository", "Refresh package metadata", "Install HardwareMon"],
+    commands: [
+      "sudo tee /etc/yum.repos.d/hardwaremon.repo > /dev/null <<'EOF'\n[hardwaremon]\nname=HardwareMon\nbaseurl=https://pub-f6d988b71b7f48198af4ccbfb6026ba9.r2.dev/dnf\nenabled=1\ngpgcheck=0\nEOF",
+      "sudo dnf makecache",
+      "sudo dnf install hardwaremon",
+    ],
     assetExtensions: [".rpm"],
   },
 };
@@ -75,6 +87,7 @@ export default function DownloadExperience() {
   useEffect(() => {
     const detectionFrame = window.requestAnimationFrame(() => {
       const userAgent = navigator.userAgent.toLowerCase();
+
       if (userAgent.includes("linux")) {
         setSelected("apt");
         setDetected("Linux detected");
@@ -98,17 +111,20 @@ export default function DownloadExperience() {
   }, []);
 
   const detail = packageDetails[selected];
+
   const downloadAsset = useMemo(() => {
     if (!release) return null;
+
     return release.assets.find((asset) =>
-      detail.assetExtensions.some((extension) => asset.name.toLowerCase().endsWith(extension)),
+      detail.assetExtensions.some((extension) => asset.name.toLowerCase().endsWith(extension))
     );
   }, [detail.assetExtensions, release]);
+
   const downloadUrl = downloadAsset?.url ?? fallbackRelease;
 
   const copyCommand = async () => {
     try {
-      await navigator.clipboard.writeText(detail.command);
+      await navigator.clipboard.writeText(detail.commands.join("\n"));
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -127,10 +143,12 @@ export default function DownloadExperience() {
   return (
     <section id="download" className="download-experience" aria-labelledby="download-title">
       <div className="download-glow" aria-hidden="true" />
+
       <div className="section-kicker">
         <span>13</span>
         <span>Ready when you are</span>
       </div>
+
       <div className="download-heading">
         <p className="eyebrow">{detected}</p>
         <h2 id="download-title">
@@ -139,8 +157,8 @@ export default function DownloadExperience() {
           <span>Pick your platform.</span>
         </h2>
         <p>
-          We have already picked the most likely option for this device. You can switch packages
-          if we guessed wrong, then install the latest public release.
+          We have already picked the most likely option for this device. You can switch packages if
+          we guessed wrong, then install the latest public release.
         </p>
       </div>
 
@@ -149,6 +167,7 @@ export default function DownloadExperience() {
           {(Object.keys(packageDetails) as PackageKind[]).map((kind) => {
             const item = packageDetails[kind];
             const Icon = item.icon;
+
             return (
               <button
                 type="button"
@@ -228,13 +247,21 @@ export default function DownloadExperience() {
                   <span />
                   <small>hardwaremon-install</small>
                 </div>
+
                 <code>
-                  <span>$</span> {detail.command}
+                  {detail.commands.map((command) => (
+                    <span key={command}>
+                      <strong>$</strong> {command}
+                      <br />
+                    </span>
+                  ))}
                 </code>
+
                 <button type="button" onClick={copyCommand}>
                   {copied ? <Check size={14} /> : <Copy size={14} />}
                   {copied ? "Copied" : "Copy"}
                 </button>
+
                 <p>
                   <i className="status-pulse" /> Repository connected · package ready
                 </p>
